@@ -14,10 +14,15 @@ const vehicleSchema = Joi.object({
         .required(),
     primaryimage: Joi.string()
         .uri()
-        .required(),
+        .optional(),
     otherimages: Joi.array()
         .items(Joi.string().uri())
-        .optional(),
+        .optional()
+        .min(0),   
+    primaryimageindex: Joi.number()
+        .integer()
+        .min(0) 
+        .required(),   
     model: Joi.string()
         .max(50)
         .optional()
@@ -27,17 +32,19 @@ const vehicleSchema = Joi.object({
         .optional()
         .allow(''),
     vehicletype: Joi.string()
-        .valid('SUV', 'Sedan', 'Truck', 'Coupe', 'Hatchback', 'Convertible', 'Wagon', 'suv', 'sedan', 'truck', 'coupe', 'hatchback', 'convertible', 'wagon') // Add lowercase options here
+        .valid('SUV', 'Sedan', 'Truck', 'Coupe', 'Hatchback', 'Convertible', 'Wagon', 
+               'suv', 'sedan', 'truck', 'coupe', 'hatchback', 'convertible', 'wagon') // Include lowercase options
         .required(),
-    quantity: Joi.number() 
+    quantity: Joi.number()
         .integer()
         .min(1)
         .required(),
     transmission: Joi.string()
-        .valid('MANUAL', 'AUTOMATIC','manual', 'automatic') 
+        .valid('MANUAL', 'AUTOMATIC', 'Manual', 'Automatic') // Include variations
         .required(),
     fueltype: Joi.string()
-        .valid('PETROL', 'DIESEL', 'HYBRID', 'ELECTRIC','petrol', 'diesal', 'hybrid', 'electric')  // Add valid fuel types
+        .valid('PETROL', 'DIESEL', 'HYBRID', 'ELECTRIC', 
+               'Petrol', 'Diesel', 'Hybrid', 'Electric') // Include variations
         .required(),
 });
 
@@ -48,51 +55,57 @@ const updateVehicleSchema = Joi.object({
         .max(50)
         .optional(),
     description: Joi.string()
-        .max(255)
+        
         .optional()
         .allow(''),
     price: Joi.number()
         .positive()
+        .precision(2)
         .optional(),
     primaryimage: Joi.string()
-        .uri() 
+        .uri()
         .optional(),
     otherimages: Joi.array()
-        .items(Joi.string().uri()) 
-        .optional(),
+        .items(Joi.string().uri())
+        .optional()
+        .min(0), // Allow an empty array
+    primaryimageindex: Joi.number() // Include primaryimageindex for update validation
+        .integer()
+        .min(0) 
+        .optional(), // Make it optional for updates
     model: Joi.string()
         .max(50)
         .optional()
-        .allow(''), 
+        .allow(''),
     manufacturer: Joi.string()
-        .max(50) 
-        .optional() 
-        .allow(''), 
+        .max(50)
+        .optional()
+        .allow(''),
     vehicletype: Joi.string()
         .valid('SUV', 'Sedan', 'Truck', 'Coupe', 'Hatchback', 'Convertible', 'Wagon')
         .optional(),
-    quantity: Joi.number() 
+    quantity: Joi.number()
         .integer()
         .min(1)
         .optional(),
     transmission: Joi.string()
-        .valid('MANUAL', 'AUTOMATIC')  // Add valid transmission options
+        .valid('MANUAL', 'AUTOMATIC')
         .optional(),
     fueltype: Joi.string()
-        .valid('PETROL', 'DIESEL', 'HYBRID', 'ELECTRIC')  // Add valid fuel types
+        .valid('PETROL', 'DIESEL', 'HYBRID', 'ELECTRIC')
         .optional(),
 });
 
 // Function to validate vehicle data for creation
 const validateVehicle = (vehicleData) => {
     const { error, value } = vehicleSchema.validate(vehicleData, { abortEarly: false });
-    return { error, value }; 
+    return { error, value };
 };
 
 // Function to validate vehicle data for updating
 const validateUpdateVehicle = (updateData) => {
     const { error, value } = updateVehicleSchema.validate(updateData, { abortEarly: false });
-    return { error, value }; 
+    return { error, value };
 };
 
 export default {

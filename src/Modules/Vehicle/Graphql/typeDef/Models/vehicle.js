@@ -5,11 +5,11 @@ const vehicletypeDef = gql`
 enum Transmission {
         MANUAL
         AUTOMATIC
-        manual
-        automatic
-    }
+        Manual
+        Automatic
+}
 
-    enum FuelType {
+enum FuelType {
         DIESEL
         PETROL
         ELECTRIC
@@ -17,14 +17,28 @@ enum Transmission {
         CNG        
         LPG        
         BIOFUEL 
-        diesel
-        petrol
-        electric
-        hybrid
+        Diesel
+        Petrol
+        Electric
+        Hybrid
         cng
-    }
+}
 
-    type Vehicle {
+input VehicleInput {
+    name: String!
+    description: String
+    price: Float!
+    model: String!
+    manufacturer: String!
+    vehicletype: String!
+    transmission: Transmission!
+    fueltype: FuelType!
+    images: [Upload]!
+    primaryimageindex: Int!
+    quantity: Int!
+}
+
+type Vehicle {
         id: ID!
         name: String
         description: String
@@ -37,7 +51,28 @@ enum Transmission {
         quantity: Int!
         transmission: Transmission!
         fueltype: FuelType!
-    }
+        primaryimageindex: Int!
+        images: [Image]
+}
+
+type Image {
+        id: ID!
+        vehicleId: ID!  
+        url: String!
+}
+
+type VehicleAvailabilityResponse {
+  available: Boolean
+  message: String
+}
+
+type VehicleAvailability {
+  vehicleId: ID!
+  date: String!
+  availableQuantity: Int!
+}
 `;
+
+
 
 export default vehicletypeDef;

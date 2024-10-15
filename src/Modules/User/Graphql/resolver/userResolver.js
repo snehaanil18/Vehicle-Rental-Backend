@@ -29,6 +29,11 @@ const userResolver = {
     deleteUser: async (parent, { id }) => {
       return await userController.deleteUser(id);
     },
+
+    // Login a user
+    loginUser: async (parent, { email, password }) => {
+      return await userController.loginUser(email, password);
+    },
   },
 };
 

@@ -31,7 +31,13 @@ const userRepository = {
   // Delete a user from the database using ID
   async deleteUserById(id) {
     return await pool.query('DELETE FROM users WHERE id = $1 RETURNING *', [id]);
-  }
+  },
+
+  // Get a user by email from the database
+  async getUserByEmail(email) {
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    return result.rows.length > 0 ? result.rows[0] : null; // Return user or null if not found
+  },
 };
 
 export default userRepository;

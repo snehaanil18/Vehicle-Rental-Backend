@@ -20,8 +20,11 @@
     "graphql": "^16.3.0",
     "graphql-upload": "13.0.0",
     "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
     "minio": "^8.0.1",
     "pg": "^8.13.0",
+    "razorpay": "^2.9.4",
+    "typesense": "^1.8.2",
     "uuid": "^10.0.0"
   }
 }

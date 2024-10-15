@@ -26,6 +26,8 @@ const userMutations = gql`
     ): User
 
     deleteUser(id: ID!): User
+
+    loginUser(email: String!, password: String!): User
   }
 `;
 

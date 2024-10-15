@@ -10,11 +10,8 @@ type Model {
     id: ID!
     name: String!
     year: Int!
+    manufacturerid: ID!
 }
+`;
 
-type Query {
-    getAllManufacturers: [Manufacturer]
-    getModelsByManufacturer(manufacturerId: ID!): [Model]
-}
-`
 export default detailsTypeDef;

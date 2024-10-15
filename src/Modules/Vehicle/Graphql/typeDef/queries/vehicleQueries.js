@@ -4,6 +4,9 @@ const vehicleQueries = gql`
     type Query {
         getAllVehicles: [Vehicle]
         getVehicle(id: ID!): Vehicle
+        searchVehicles(query: String!): [Vehicle]
+        getImagesByVehicleId(vehicleId: ID!): [Image]
+        getVehicleAvailability(vehicleId: ID!, pickupdate: String!, dropoffdate: String!): VehicleAvailabilityResponse
     }
 `;
 

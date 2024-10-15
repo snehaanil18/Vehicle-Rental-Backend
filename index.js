@@ -11,9 +11,11 @@ import { ApolloServer } from 'apollo-server-express'
 import schema from './graphql/schema.js';
 import { graphqlUploadExpress} from 'graphql-upload';
 
+import createTypesenseCollection from './Config/Typesense/vehicleSchema.js'
 
 const app = express();
 
+createTypesenseCollection();
 // Middleware to parse JSON data
 app.use(express.json());
 app.use(cors())

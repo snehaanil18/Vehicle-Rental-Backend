@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import userRequest from '../Request/userRequest.js';
 import userRepository from '../Repository/userRepository.js';
+import { AuthenticationError } from 'apollo-server-express';
 
 const userController = {
   // Fetch all users
@@ -36,23 +37,34 @@ const userController = {
     // Validate user input
     const { error } = userRequest.validateCreateUser({ name, email, password, phone, city, state, country, pincode });
     if (error) {
-      throw new Error(`Validation error: ${error.details.map((err) => err.message).join(', ')}`);
+        throw new Error(`Validation error: ${error.details.map((err) => err.message).join(', ')}`);
     }
 
     try {
-      // Hash the password
-      const hashedPassword = await bcrypt.hash(password, 10);
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Call the repository to create a new user with additional fields
-      const result = await userRepository.createUser({ name, email, hashedPassword, phone, city, state, country, pincode });
+        // Call the repository to create a new user with additional fields
+        const result = await userRepository.createUser({ name, email, hashedPassword, phone, city, state, country, pincode });
 
-      // Return the created user data
-      return result.rows[0];
+        // Return the created user data
+        return result.rows[0];
     } catch (err) {
-      console.error('Error creating user:', err);
-      throw new Error('Failed to create user');
+        console.error('Error creating user:', err);
+
+        // Check for unique constraint violation
+        if (err.code === '23505') { // Unique violation error code
+            if (err.detail.includes('Key (email)')) {
+                throw new Error('Email already exists. Please use a different email.');
+            } else if (err.detail.includes('Key (phone)')) {
+                throw new Error('Phone number already exists. Please use a different phone number.');
+            }
+        }
+
+        throw new Error('Failed to create user: ' + err.message);
     }
-  },
+},
+
 
   // Update an existing user by ID
   async updateUser({ id, name, email, password, phone, city, state, country, pincode }) {
@@ -99,7 +111,30 @@ const userController = {
       console.error('Error deleting user:', err);
       throw new Error('Failed to delete user');
     }
-  }
+  },
+
+  async loginUser(email, password) {
+    try {
+      // Fetch user by email
+      const user = await userRepository.getUserByEmail(email);
+      if (!user) {
+        throw new AuthenticationError('User not found.');
+      }
+
+      // Compare the password
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        throw new AuthenticationError('Incorrect password.');
+      }
+
+      // Exclude password from user details
+      const { password: _, ...userDetails } = user;
+      return userDetails; // Return user details
+    } catch (err) {
+      console.error('Error logging in user:', err);
+      throw new Error('Failed to log in user');
+    }
+  },
 };
 
 export default userController;
