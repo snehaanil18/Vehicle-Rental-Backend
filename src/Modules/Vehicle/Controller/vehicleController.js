@@ -116,6 +116,14 @@ const vehicleController = {
         }
         try {
             const result = await vehicleRepository.updateVehicle(id, args);
+            const updatedVehicle =  result.rows[0] //name, description, price, quantity
+            await typesenseClient.collections('vehicles').documents().update({
+                id: updatedVehicle.id,
+                name: updatedVehicle.name,
+                description: updatedVehicle.description,
+                price: parseFloat(updatedVehicle.price),
+                quantity: updatedVehicle.quantity
+            });
             const response = {
                 success: true,
                 message: 'Vehicle updated successfully',
@@ -193,14 +201,21 @@ const vehicleController = {
                 isPrimary: index === args.primaryimageindex,
                 url
             }));
-    
 
+            console.log('img',imagesToInsert);
             
             // Insert new images into the database
             await Promise.all(imagesToInsert.map(image => {
                 return vehicleRepository.addImage(image);
             }));
     
+            await typesenseClient.collections('vehicles').documents().update({
+                id: vehicleId,
+                primaryimage:imagesToInsert.find(img => img.isPrimary)?.url || '',
+                otherimages:imagesToInsert.filter(img => !img.isPrimary).map(img => img.url),
+            });
+            
+            
             // Return success message or updated vehicle images
             return { message: 'Images updated successfully' };
         } catch (err) {

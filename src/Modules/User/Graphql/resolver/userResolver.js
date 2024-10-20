@@ -1,4 +1,5 @@
 import userController from '../../Controllers/userController.js';
+import uploadResolver from '../../../../../Config/ImageUpload/singleImage/Resolver/uploadResolver.js'
 
 const userResolver = {
   Query: {
@@ -21,8 +22,8 @@ const userResolver = {
     },
 
     // Update an existing user by ID
-    updateUser: async (parent, { id, name, email, password, phone, city, state, country, pincode }) => {
-      return await userController.updateUser({ id, name, email, password, phone, city, state, country, pincode });
+    updateUser: async (parent, { id, name, email, phone, city, state, country, pincode }) => {
+      return await userController.updateUser({ id, name, email, phone, city, state, country, pincode });
     },
 
     // Delete a user by ID
@@ -34,6 +35,12 @@ const userResolver = {
     loginUser: async (parent, { email, password }) => {
       return await userController.loginUser(email, password);
     },
+
+    updateProfileImage: async (parent, { id, file }) => {
+      const profileUrl = await uploadResolver.Mutation.uploadFile(null, { file });
+      return await userController.updateUserProfileImage(id,profileUrl);      
+    }
+  
   },
 };
 

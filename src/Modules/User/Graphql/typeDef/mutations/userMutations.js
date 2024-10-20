@@ -1,6 +1,8 @@
 import { gql } from 'apollo-server-express'
 
 const userMutations = gql`
+scalar Upload
+
   type Mutation {
     createUser(
       name: String!,
@@ -17,7 +19,6 @@ const userMutations = gql`
       id: ID!,
       name: String,
       email: String,
-      password: String,
       phone: String,
       city: String,
       state: String,
@@ -28,6 +29,8 @@ const userMutations = gql`
     deleteUser(id: ID!): User
 
     loginUser(email: String!, password: String!): User
+
+    updateProfileImage(id: ID!, file: Upload!): User
   }
 `;
 

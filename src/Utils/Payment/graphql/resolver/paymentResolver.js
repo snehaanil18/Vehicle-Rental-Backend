@@ -14,8 +14,8 @@ const paymentResolver = {
       const success = paymentController.verifyPayment(orderId, paymentId, signature);
       return { success };
     },
-    createPayment: async (_, { bookingId, amountPaid, status,pickupdate, dropoffdate,vehicleid}) => {     
-      return await paymentController.createPaymentRecord(bookingId, amountPaid, status,vehicleid, pickupdate, dropoffdate);
+    createPayment: async (_, { bookingid, amountpaid, status,pickupdate, dropoffdate,vehicleid}) => {     
+      return await paymentController.createPaymentRecord(bookingid, amountpaid, status,vehicleid, pickupdate, dropoffdate);
     },
   },
 };

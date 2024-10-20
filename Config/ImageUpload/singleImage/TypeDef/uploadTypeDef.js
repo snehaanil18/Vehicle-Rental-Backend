@@ -15,7 +15,7 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    uploadFile(file: Upload!): File!
+    uploadFile(file: Upload!): File
   }
 `;
 

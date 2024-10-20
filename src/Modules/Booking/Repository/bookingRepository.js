@@ -17,7 +17,7 @@ const bookingRepository = {
 
   // Fetch bookings by user ID
   async getBookingsByUser(userId) {
-    const query = 'SELECT * FROM bookings WHERE userId = $1';
+    const query = 'SELECT * FROM bookings WHERE userid = $1';
     const result = await pool.query(query, [userId]);
     return result; // Return the result containing user's bookings
   },
@@ -52,14 +52,14 @@ const bookingRepository = {
     return result; // Return the result containing the deleted booking
   },
 
-  async updatePaymentStatus(bookingId, newStatus) {
+  async updatePaymentStatus(bookingid, newStatus) {
     const query = `
     UPDATE bookings
     SET paymentstatus = $1
     WHERE id = $2
     RETURNING *; -- Optionally return the updated booking record
 `;
-    const values = [newStatus, bookingId];
+    const values = [newStatus, bookingid];
     try {
       const result = await pool.query(query, values);
       return result.rows[0];

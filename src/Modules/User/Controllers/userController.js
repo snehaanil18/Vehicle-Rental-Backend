@@ -2,10 +2,12 @@ import bcrypt from 'bcrypt';
 import userRequest from '../Request/userRequest.js';
 import userRepository from '../Repository/userRepository.js';
 import { AuthenticationError } from 'apollo-server-express';
+import phoneResolver from '../../../Utils/Twilio/graphql/resolver/phoneResolver.js';
+// import redisClient from '../../../../Config/Redis/redisClient.js';
 
 const userController = {
   // Fetch all users
-  async getAllUsers() {
+  async getAllUsers() { 
     try {
       const result = await userRepository.getAllUsers();
       // Return the fetched users
@@ -43,9 +45,15 @@ const userController = {
     try {
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
+        console.log('1',phone);
+        
+        const sendOTP = await phoneResolver.Mutation.sendOTP(null, { phone });
+        console.log(sendOTP);
+
+        
 
         // Call the repository to create a new user with additional fields
-        const result = await userRepository.createUser({ name, email, hashedPassword, phone, city, state, country, pincode });
+        // const result = await userRepository.createUser({ name, email, hashedPassword, phone, city, state, country, pincode });
 
         // Return the created user data
         return result.rows[0];
@@ -67,9 +75,9 @@ const userController = {
 
 
   // Update an existing user by ID
-  async updateUser({ id, name, email, password, phone, city, state, country, pincode }) {
+  async updateUser({ id, name, email, phone, city, state, country, pincode }) {
     // Validate user input
-    const { error } = userRequest.validateUpdateUser({ id, name, email, password, phone, city, state, country, pincode });
+    const { error } = userRequest.validateUpdateUser({ id, name, email, phone, city, state, country, pincode });
     if (error) {
       throw new Error(`Validation error: ${error.details.map((err) => err.message).join(', ')}`);
     }
@@ -77,17 +85,13 @@ const userController = {
     try {
       let updatedFields = { name, email, phone, city, state, country, pincode };
 
-      // If password is provided, hash it before updating
-      if (password) {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        updatedFields.password = hashedPassword;
-      }
 
+   
       // Call the repository to update the user
       const result = await userRepository.updateUser({ id, ...updatedFields });
 
       if (result.rows.length > 0) {
-        return result.rows[0]; // Return the updated user
+        return result.rows[0];
       } else {
         throw new Error('User not found');
       }
@@ -128,13 +132,32 @@ const userController = {
       }
 
       // Exclude password from user details
-      const { password: _, ...userDetails } = user;
-      return userDetails; // Return user details
+      
+      return user; // Return user details
     } catch (err) {
       console.error('Error logging in user:', err);
       throw new Error('Failed to log in user');
     }
   },
+
+  async updateUserProfileImage(id, imageUrl) {
+    try {
+      // Update the user profile image in the repository
+      const result = await userRepository.updateUserProfileImage(id, imageUrl);
+  
+      if (result.rows.length > 0) {
+        const updatedUser = result.rows[0];
+        // Exclude the password field from the returned user object
+        const { password: _, ...userDetails } = updatedUser;
+        return userDetails; 
+      } else {
+        throw new Error('User not found');
+      }
+    } catch (err) {
+      console.error('Error updating profile image:', err);
+      throw new Error('Failed to update profile image');
+    }
+  }
 };
 
 export default userController;

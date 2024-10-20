@@ -8,7 +8,7 @@ const typeDefs = gql`
   type Mutation {
     createPaymentOrder(amount: Float!): PaymentOrder!
     verifyPayment(orderId: String!, paymentId: String!, signature: String!): PaymentVerification!
-    createPayment(bookingId: String!, amountPaid: Float!, status: String!,vehicleid: String!, pickupdate: String!,dropoffdate: String!,): Payment!
+    createPayment(bookingid: String!, amountpaid: Float!, status: String!,vehicleid: String!, pickupdate: String!,dropoffdate: String!,): Payment!
   }
  
   type PaymentOrder {

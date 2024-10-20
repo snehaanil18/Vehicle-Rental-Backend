@@ -6,9 +6,10 @@ import multipleImageSchema from '../Config/ImageUpload/MultipleImage/multipleSch
 import detailsSchema from '../src/Modules/Manufacturers/Graphql/detailSchema.js'
 import bookingSchema from '../src/Modules/Booking/Graphql/bookingSchema.js'
 import paymentSchema from '../src/Utils/Payment/graphql/paymentSchema.js'
+import phoneSchema from '../src/Utils/Twilio/graphql/phoneSchema.js'
 
 const schema = mergeSchemas({
-    schemas: [userSchema, vehicleSchema, singleImageSchema, multipleImageSchema, detailsSchema, bookingSchema, paymentSchema],
+    schemas: [userSchema, vehicleSchema, singleImageSchema, multipleImageSchema, detailsSchema, bookingSchema, paymentSchema, phoneSchema],
   })
 
 export default schema;

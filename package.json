@@ -22,8 +22,11 @@
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "minio": "^8.0.1",
+    "otp-generator": "^4.0.1",
     "pg": "^8.13.0",
     "razorpay": "^2.9.4",
+    "redis": "^4.7.0",
+    "twilio": "^5.3.4",
     "typesense": "^1.8.2",
     "uuid": "^10.0.0"
   }

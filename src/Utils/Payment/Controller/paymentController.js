@@ -36,17 +36,17 @@ const paymentController = {
   },
 
   // Record payment details in the database
-  async createPaymentRecord(bookingId, amountPaid, status, vehicleid,pickupdate, dropoffdate) {
+  async createPaymentRecord(bookingid, amountpaid, status, vehicleid,pickupdate, dropoffdate) {
     try {
       const paymentData = {
-        bookingid: bookingId,
-        amountpaid: amountPaid,
+        bookingid: bookingid,
+        amountpaid: amountpaid,
         status: status,
       };
    
       
       const payment = await paymentRepository.addPayment(paymentData);
-      await bookingRepository.updatePaymentStatus(bookingId, 'Paid');
+      await bookingRepository.updatePaymentStatus(bookingid, 'Paid');
 
       
       const startDate = new Date(pickupdate);
@@ -71,8 +71,8 @@ const paymentController = {
       }
       
       return {
-        bookingId: payment.bookingid , 
-        amountPaid: payment.amountpaid,
+        bookingid: payment.bookingid , 
+        amountpaid: payment.amountpaid,
         status: payment.status
     }; // Return the created payment record
     } catch (error) {

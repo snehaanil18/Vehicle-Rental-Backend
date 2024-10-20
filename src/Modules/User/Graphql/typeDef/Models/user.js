@@ -11,6 +11,7 @@ const userTypeDef = gql`
     country: String
     pincode: String
     password: String!
+    profileimage: String
   }
 `;
 

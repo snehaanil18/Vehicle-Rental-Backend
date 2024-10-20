@@ -21,10 +21,10 @@ const userRepository = {
   },
 
   // Update an existing user in the database
-  async updateUser({ id, name, email, password, phone, city, state, country, pincode }) {
+  async updateUser({ id, name, email, phone, city, state, country, pincode }) {
     return await pool.query(
-      'UPDATE users SET name = $1, email = $2, password = $3, phone = $4, city = $5, state = $6, country = $7, pincode = $8 WHERE id = $9 RETURNING *',
-      [name, email, password, phone, city, state, country, pincode, id]
+      'UPDATE users SET name = $1, email = $2, phone = $3, city = $4, state = $5, country = $6, pincode = $7 WHERE id = $8 RETURNING *',
+      [name, email, phone, city, state, country, pincode, id]
     );
   },
 
@@ -38,6 +38,20 @@ const userRepository = {
     const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
     return result.rows.length > 0 ? result.rows[0] : null; // Return user or null if not found
   },
+
+  async  updateUserProfileImage(id, imageUrl) {
+
+    const query = `
+      UPDATE users
+      SET profileimage = $1
+      WHERE id = $2
+      RETURNING *;
+    `;
+  
+    const values = [imageUrl, id];
+    const result = await pool.query(query, values);
+    return result;
+  }
 };
 
 export default userRepository;

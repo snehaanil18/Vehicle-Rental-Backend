@@ -13,8 +13,8 @@ const bookingResolver = {
     },
 
     // Fetch bookings by user ID
-    getBookingsByUser: async (parent, { userId }) => {
-      return await bookingController.getBookingsByUser(userId);
+    getBookingsByUser: async (parent, { userid }) => {
+      return await bookingController.getBookingsByUser(userid);
     },
   },
 
