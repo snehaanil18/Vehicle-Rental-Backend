@@ -2,6 +2,7 @@ import bookingRequest from '../Request/bookingRequest.js';
 import bookingRepository from '../Repository/bookingRepository.js';
 import vehicleController from '../../Vehicle/Controller/vehicleController.js';
 import userController from '../../User/Controllers/userController.js';
+import vehicleRepository from '../../Vehicle/Repository/vehicleRepository.js';
 
 const bookingController = {
   // Fetch all bookings
@@ -139,6 +140,41 @@ const bookingController = {
       throw new Error('Failed to delete booking');
     }
   },
+
+  cancelBooking: async ({ bookingId, userId }) => {
+    try{
+      const bookingDetails = await bookingRepository.getBookingById(bookingId);
+      
+      const booking = bookingDetails.rows[0]
+      console.log('details',booking);
+      if (!booking) {
+        return {
+          success: false,
+          message: "Booking not Found"
+        }
+      }
+      console.log('id token',userId);
+      
+
+      if (booking.userid !== userId) {
+        return {
+          success: false,
+          message: "Booking cancellation not authorized"
+        }
+      }
+
+      await bookingRepository.updatePaymentStatus(bookingId, 'Canceled');
+      await vehicleRepository.updateVehicleAvailabilityAfterCancel(booking.vehicleid, booking.pickupdate, booking.dropoffdate);
+      return {
+        success: true,
+        message: 'Booking canceled successfully',
+      };
+    }
+    catch (error) {
+      console.error('Error canceling booking:', error);
+      throw new Error('Failed to cancel booking');
+    }
+  }
 };
 
 export default bookingController;

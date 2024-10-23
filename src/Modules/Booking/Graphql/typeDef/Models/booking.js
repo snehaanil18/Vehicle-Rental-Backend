@@ -7,8 +7,10 @@ const bookingTypeDef = gql`
     FAILED
     Pending
     Paid
+    Canceled
     paid
     pending
+    canceled
     Failed
   }
 

@@ -129,8 +129,6 @@ const vehicleRepository = {
 
   updateAvailability: async (availabilityInput) => {
     const { vehicleId, date, quantity } = availabilityInput;
-
-
     try {
       const result = await pool.query(
         `UPDATE vehicleavailability 
@@ -152,6 +150,14 @@ const vehicleRepository = {
     } catch (err) {
       throw new Error(`Failed to update vehicle availability: ${err.message}`);
     }
+  },
+
+  updateVehicleAvailabilityAfterCancel: async (vehicleId, pickupdate, dropoffdate) => {
+    await pool.query(`
+      UPDATE vehicleavailability
+      SET availablequantity = availablequantity + 1
+      WHERE vehicleid = $1 AND date BETWEEN $2 AND $3
+    `, [vehicleId, pickupdate, dropoffdate]);
   },
 
   

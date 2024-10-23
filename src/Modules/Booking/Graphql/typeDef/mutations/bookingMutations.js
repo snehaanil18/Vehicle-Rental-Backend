@@ -14,6 +14,15 @@ type Mutation {
       userid: String,
       paymentstatus: PaymentStatus!
     ): BookingResult
+
+    cancelBooking(
+      bookingId: String!
+    ): CancelBookingResult
+  }
+
+  type CancelBookingResult {
+    success: Boolean!
+    message: String!
   }
 
   
