@@ -12,6 +12,7 @@ const userTypeDef = gql`
     pincode: String
     password: String!
     profileimage: String
+    phoneverify: Boolean!
   }
 `;
 

@@ -39,7 +39,7 @@ const userRepository = {
     return result.rows.length > 0 ? result.rows[0] : null; // Return user or null if not found
   },
 
-  async  updateUserProfileImage(id, imageUrl) {
+  async updateUserProfileImage(id, imageUrl) {
 
     const query = `
       UPDATE users
@@ -47,10 +47,48 @@ const userRepository = {
       WHERE id = $2
       RETURNING *;
     `;
-  
+
     const values = [imageUrl, id];
     const result = await pool.query(query, values);
     return result;
+  },
+
+  async setOTP({ userId, otp, otpExpiry }) {
+    console.log(otpExpiry);
+
+    const otpExpiryInSeconds = Math.floor(otpExpiry / 1000);
+    console.log(otpExpiryInSeconds);
+
+    const result = await pool.query(
+      `INSERT INTO otp (userid, otp, otpexpiry)
+             VALUES ($1, $2,to_timestamp($3))
+             RETURNING id, otp, otpexpiry`,
+      [userId, otp, otpExpiryInSeconds]
+    );
+    return result.rows[0];
+
+  },
+
+  async getOTP(id) {
+    const user = await pool.query('SELECT * FROM otp WHERE userid = $1', [id])
+    return user.rows[0]
+  },
+
+  async updatePhoneVerify(userId, phoneVerified) {
+    const query = `
+    UPDATE users 
+    SET phoneverify = $1 
+    WHERE id = $2
+    RETURNING id, phoneverify;
+`;
+    const values = [phoneVerified, userId];
+
+    const result = await pool.query(query, values);
+    return result.rows[0];
+  },
+
+  async clearOTP(userId) {
+    await pool.query('DELETE FROM otp WHERE userid = $1', [userId]);
   }
 };
 

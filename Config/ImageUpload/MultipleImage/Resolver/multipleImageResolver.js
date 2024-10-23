@@ -27,10 +27,12 @@ const resolvers = {
                 console.log(`Bucket "${bucketName}" created successfully.`);
               }
 
-            await minioClient.putObject(bucketName, objectName, createReadStream());
+            const res = await minioClient.putObject(bucketName, objectName, createReadStream());
+            console.log(res);
             
             // Construct the file URL
-            const url = `http://${process.env.MINIO_ENDPOINT}:${process.env.MINIO_PORT}/${bucketName}/${objectName}`;
+            // const url = `http://${process.env.MINIO_ENDPOINT}:${process.env.MINIO_PORT}/${bucketName}/${objectName}`;
+            const url = `http://localhost:9000/${bucketName}/${objectName}`;
   
             // Add the uploaded file metadata to the array
             uploadedFiles.push(url);

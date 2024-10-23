@@ -1,6 +1,7 @@
 import bookingRequest from '../Request/bookingRequest.js';
 import bookingRepository from '../Repository/bookingRepository.js';
 import vehicleController from '../../Vehicle/Controller/vehicleController.js';
+import userController from '../../User/Controllers/userController.js';
 
 const bookingController = {
   // Fetch all bookings
@@ -41,7 +42,14 @@ const bookingController = {
   },
 
   // Create a new booking
-  async createBooking({ vehicleid, vehiclename, pickupdate, pickuplocation, dropoffdate, dropofflocation, totalamount, username, userid, paymentstatus }) {
+  async createBooking({ vehicleid, vehiclename, pickupdate, pickuplocation, dropoffdate, dropofflocation, totalamount, username, userid, paymentstatus,userId }) {
+  const userDetails = await userController.getUserById(userId)
+    if(userid==null){
+      userid=userDetails.id,
+      username=userDetails.name
+      console.log( userid,username );
+    }
+    
     // Validate booking input
     const { error } = bookingRequest.validateCreateBooking({ vehicleid, vehiclename, pickupdate, pickuplocation, dropoffdate, dropofflocation, totalamount, username, userid, paymentstatus });
     if (error) {
@@ -52,6 +60,7 @@ const bookingController = {
       const availability = await vehicleController.checkVehicleAvailability(vehicleid,pickupdate, dropoffdate)
       
       if(availability.available){
+        
         const result = await bookingRepository.createBooking({
           vehicleid,
           vehiclename,

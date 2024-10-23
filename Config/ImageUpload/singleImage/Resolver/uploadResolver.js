@@ -18,7 +18,7 @@ const resolvers = {
 
       const objectName = `${uuidv4()}-${filename}`;
    
-      const bucketName = process.env.MINIO_BUCKET_IMG;      
+      const bucketName = process.env.MINIO_BUCKET_NAME;      
       if (!bucketName) {
         throw new Error('MinIO bucket name is not defined in environment variables');
       }
@@ -49,9 +49,7 @@ const resolvers = {
       }
 
       // Construct the file URL (make sure the environment variables are correct)
-      const url = `http://${process.env.MINIO_ENDPOINT}:${process.env.MINIO_PORT}/${bucketName}/${objectName}`;
-      console.log(url);
-      
+      const url = `http://localhost:9000/${bucketName}/${objectName}`;
 
       // Return the file metadata and URL
       return url;

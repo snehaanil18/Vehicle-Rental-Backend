@@ -10,8 +10,8 @@ type Mutation {
       dropoffdate: String!,
       dropofflocation: String!,
       totalamount: Float!,
-      username: String!,
-      userid: String!,
+      username: String,
+      userid: String,
       paymentstatus: PaymentStatus!
     ): BookingResult
   }

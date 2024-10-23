@@ -13,7 +13,9 @@ scalar Upload
       state: String,
       country: String,
       pincode: String
-    ): User
+    ): sendOTPResponse
+
+
 
     updateUser(
       id: ID!,
@@ -28,9 +30,24 @@ scalar Upload
 
     deleteUser(id: ID!): User
 
-    loginUser(email: String!, password: String!): User
+    loginUser(email: String!, password: String!): loginResponse
 
     updateProfileImage(id: ID!, file: Upload!): User
+
+    verifyOTP(id:ID,phone: String!, otp: String!): sendOTPResponse
+  }
+
+  type sendOTPResponse{
+    userId:ID
+    success: Boolean
+    message:String
+  }
+
+  type loginResponse {
+    success: Boolean
+    message: String,
+    token: String,
+    user: User
   }
 `;
 

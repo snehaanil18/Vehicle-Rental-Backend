@@ -1,6 +1,8 @@
 import vehicleRepository from "../Repository/vehicleRepository.js";
 import vehicleRequest from '../Request/vehicleRequest.js'
 import typesenseClient from '../../../../Config/Typesense/typesense.js'
+import dotenv from 'dotenv';
+dotenv.config();
 
 const vehicleController = {
     // Fetch all vehicles
@@ -90,8 +92,8 @@ const vehicleController = {
                 name: createdVehicle.name,
                 description: createdVehicle.description,
                 price: parseFloat(createdVehicle.price),
-                primaryimage: imagesData.find(img => img.isPrimary)?.url || '', // Get the primary image URL
-                otherimages: imagesData.filter(img => !img.isPrimary).map(img => img.url), // Get URLs of other images
+                primaryimage: imagesData.find(img => img.isPrimary)?.url || '', 
+                otherimages: imagesData.filter(img => !img.isPrimary).map(img => img.url), 
                 model: createdVehicle.model,
                 manufacturer: createdVehicle.manufacturer,
                 vehicletype: createdVehicle.vehicletype,
@@ -115,8 +117,14 @@ const vehicleController = {
             throw new Error(`Validation error: ${error.details.map(err => err.message).join(', ')}`);
         }
         try {
+            const oldVehicleResult = await vehicleRepository.getVehicleById(id); 
+            const oldVehicle = oldVehicleResult.rows[0];
+            const oldQuantity = oldVehicle.quantity;
+
             const result = await vehicleRepository.updateVehicle(id, args);
-            const updatedVehicle =  result.rows[0] //name, description, price, quantity
+            const updatedVehicle =  result.rows[0];
+            const newQuantity = updatedVehicle.quantity;
+
             await typesenseClient.collections('vehicles').documents().update({
                 id: updatedVehicle.id,
                 name: updatedVehicle.name,
@@ -124,6 +132,12 @@ const vehicleController = {
                 price: parseFloat(updatedVehicle.price),
                 quantity: updatedVehicle.quantity
             });
+
+            const quantityDifference = newQuantity-oldQuantity;
+            if (quantityDifference !== 0) {
+                await vehicleRepository.updateQuantity(id, quantityDifference);
+            }
+
             const response = {
                 success: true,
                 message: 'Vehicle updated successfully',
@@ -202,7 +216,7 @@ const vehicleController = {
                 url
             }));
 
-            console.log('img',imagesToInsert);
+            console.log('img',imagesToInsert,process.env.MINIO_ENDPOINT);
             
             // Insert new images into the database
             await Promise.all(imagesToInsert.map(image => {

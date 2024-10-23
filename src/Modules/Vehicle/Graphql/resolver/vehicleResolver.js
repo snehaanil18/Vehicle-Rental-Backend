@@ -102,6 +102,8 @@ const vehicleResolvers = {
       return await vehicleController.deleteVehicle(id);
     },
     updateVehicleImages: async (_, { id, images }) => {
+      console.log(images),'resolver';
+      
       try {
         let primaryImageUrl;
         let otherImageUrls = [];

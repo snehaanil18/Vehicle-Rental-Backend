@@ -9,16 +9,16 @@ const userResolver = {
     },
 
     // Fetch a single user by ID
-    user: async (parent, args) => {
-      const { id } = args;
-      return await userController.getUserById(id);
+    user: async (parent, args, context) => {
+      const { userId } = context; 
+      return await userController.getUserById(userId); 
     },
   },
 
   Mutation: {
     // Create a new user
-    createUser: async (parent, { name, email, password, phone, city, state, country, pincode }) => {
-      return await userController.createUser({ name, email, password, phone, city, state, country, pincode });
+    createUser: async (parent, { name, email, password, phone, city, state, country, pincode }, context) => {
+      return await userController.createUser({ name, email, password, phone, city, state, country, pincode }, context);
     },
 
     // Update an existing user by ID
@@ -39,7 +39,11 @@ const userResolver = {
     updateProfileImage: async (parent, { id, file }) => {
       const profileUrl = await uploadResolver.Mutation.uploadFile(null, { file });
       return await userController.updateUserProfileImage(id,profileUrl);      
-    }
+    },
+
+    verifyOTP : async (_, {id, phone, otp }, context) => {
+      return await userController.verifyOTP(id,phone, otp, context);
+  }
   
   },
 };

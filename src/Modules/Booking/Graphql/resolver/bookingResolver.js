@@ -22,8 +22,9 @@ const bookingResolver = {
     // Create a new booking
     createBooking: async (
       parent,
-      { vehicleid, vehiclename, pickupdate, pickuplocation, dropoffdate, dropofflocation, totalamount, username, userid, paymentstatus }
+      { vehicleid, vehiclename, pickupdate, pickuplocation, dropoffdate, dropofflocation, totalamount, username, userid, paymentstatus },context
     ) => {
+      const {userId} = context;
       return await bookingController.createBooking({
         vehicleid,
         vehiclename,
@@ -35,6 +36,7 @@ const bookingResolver = {
         username,
         userid,
         paymentstatus,
+        userId
       });
     },
   },

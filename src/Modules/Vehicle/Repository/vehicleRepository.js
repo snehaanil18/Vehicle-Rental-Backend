@@ -109,6 +109,24 @@ const vehicleRepository = {
     }
   },
 
+  async updateQuantity(vehicleid, quantityDifference){
+    if (quantityDifference > 0) {
+      // Increase availability for future dates
+      await pool.query(`
+          UPDATE vehicleavailability 
+          SET availablequantity = availablequantity + $1 
+          WHERE vehicleid = $2 AND date >= CURRENT_DATE
+      `, [quantityDifference, vehicleid]);
+  } else if (quantityDifference < 0) {
+      
+      await pool.query(`
+          UPDATE vehicleavailability 
+          SET availablequantity = availablequantity + $1 
+          WHERE vehicleid = $2 AND date >= CURRENT_DATE
+      `, [quantityDifference, vehicleid]);
+  }
+  },
+
   updateAvailability: async (availabilityInput) => {
     const { vehicleId, date, quantity } = availabilityInput;
 
@@ -136,6 +154,7 @@ const vehicleRepository = {
     }
   },
 
+  
 
 
 };

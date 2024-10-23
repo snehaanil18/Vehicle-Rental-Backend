@@ -3,7 +3,7 @@ import { gql } from 'apollo-server-express';
 const typeDefs = gql`
   type Mutation {
     sendOTP(phone: String!):sendOTPResponse
-    verifyOTP(phone: String!, otp: String!): Boolean
+    verifyOTPf(phone: String!, otp: String!): sendOTPResponse
   }
 
   type sendOTPResponse{
