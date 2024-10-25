@@ -47,7 +47,6 @@ const paymentController = {
       
       const payment = await paymentRepository.addPayment(paymentData);
       await bookingRepository.updatePaymentStatus(bookingid, 'Paid');
-
       
       const startDate = new Date(pickupdate);
       const endDate = new Date(dropoffdate);

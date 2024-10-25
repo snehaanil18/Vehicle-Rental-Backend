@@ -47,7 +47,13 @@ scalar Upload
     success: Boolean
     message: String,
     token: String,
-    user: User
+    user: User,
+    notifications : [Notification]
+  }
+
+  type Notification {
+    userid: String!
+    message: String!
   }
 `;
 

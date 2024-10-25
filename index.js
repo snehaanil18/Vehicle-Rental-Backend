@@ -2,6 +2,8 @@ import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv';
 import session from 'express-session';
+import http from 'http';
+import { createSocketServer } from './Config/Websocket/webSocketServer.js';
 dotenv.config();
 
 import userMigrations from './Config/Migrations/userMigration.js'
@@ -15,7 +17,11 @@ import { graphqlUploadExpress} from 'graphql-upload';
 import createTypesenseCollection from './Config/Typesense/vehicleSchema.js'
 import jwt from 'jsonwebtoken';
 
+
 const app = express();
+const httpServer = http.createServer(app); 
+const io = createSocketServer(httpServer);
+
 
 createTypesenseCollection();
 // Middleware to parse JSON data
@@ -29,9 +35,7 @@ app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) { 
       callback(null, true);
-    } else {
-      console.log('else');
-      
+    } else {      
       callback(new Error('Not allowed by CORS'));
     }
   },
@@ -79,6 +83,7 @@ const server = new ApolloServer({
     return {
       req,
       res,
+      io,
       userId, // Include userId in the context
     };
   },
@@ -94,11 +99,16 @@ const startServer = async () => {
   await userMigrations();
   await vehicleMigrations(); // Run vehicle migrations
   await seedData(); // Seed the data
+
+  httpServer.listen(PORT, () => { // Using httpServer.listen here
+    console.log(`HServer running on port ${PORT}`);
+    console.log(`GraphQL endpoint available at http://localhost:${PORT}/graphql`);
+  })
   
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    console.log(`GraphQL endpoint available at http://localhost:${PORT}/graphql`); // Uncomment to log the endpoint
-  });
+  // app.listen(PORT, () => {
+  //   console.log(`Server running on port ${PORT}`);
+  //   console.log(`GraphQL endpoint available at http://localhost:${PORT}/graphql`); 
+  // });
 };
 
 // Call the async function to start the server

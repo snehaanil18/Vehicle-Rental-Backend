@@ -3,6 +3,8 @@ import bookingRepository from '../Repository/bookingRepository.js';
 import vehicleController from '../../Vehicle/Controller/vehicleController.js';
 import userController from '../../User/Controllers/userController.js';
 import vehicleRepository from '../../Vehicle/Repository/vehicleRepository.js';
+import notificationController from '../../../Utils/Notifications/Controller/notificationController.js'; 
+import WebSocket from 'ws';
 
 const bookingController = {
   // Fetch all bookings
@@ -35,7 +37,11 @@ const bookingController = {
   async getBookingsByUser(userId) {
     try {
       const result = await bookingRepository.getBookingsByUser(userId);
-      return result.rows; // Return the user's bookings
+      const bookings = result.rows; 
+      const paidBookings = bookings.filter(booking => 
+        booking.paymentstatus == 'Paid'
+      )
+      return paidBookings
     } catch (err) {
       console.error(`Error fetching bookings for user with id ${userId}:`, err);
       throw new Error('Failed to fetch user bookings');
@@ -43,12 +49,12 @@ const bookingController = {
   },
 
   // Create a new booking
-  async createBooking({ vehicleid, vehiclename, pickupdate, pickuplocation, dropoffdate, dropofflocation, totalamount, username, userid, paymentstatus,userId }) {
+  async createBooking({ vehicleid, vehiclename, pickupdate, pickuplocation, dropoffdate, dropofflocation, totalamount, username, userid, paymentstatus,userId },io) {
   const userDetails = await userController.getUserById(userId)
     if(userid==null){
-      userid=userDetails.id,
+      userid=userDetails.id
       username=userDetails.name
-      console.log( userid,username );
+
     }
     
     // Validate booking input
@@ -73,6 +79,21 @@ const bookingController = {
           username,
           userid,
           paymentstatus,
+        });
+        const formattedDate = new Date(pickupdate).toLocaleDateString('en-US', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+      });
+        await notificationController.createNotification(userid,`Your booking for ${vehiclename} from ${pickuplocation} on ${formattedDate} has been made.`)
+
+        io.emit('notification', {
+          message: `Your booking for ${vehiclename} from ${pickuplocation} on ${formattedDate} has been successfully created.`,
+          bookingDetails: result.rows[0]
         });
 
         return {
@@ -141,19 +162,19 @@ const bookingController = {
     }
   },
 
-  cancelBooking: async ({ bookingId, userId }) => {
+  cancelBooking: async ({ bookingId, userId },io) => {
     try{
       const bookingDetails = await bookingRepository.getBookingById(bookingId);
       
       const booking = bookingDetails.rows[0]
-      console.log('details',booking);
+
       if (!booking) {
         return {
           success: false,
           message: "Booking not Found"
         }
       }
-      console.log('id token',userId);
+
       
 
       if (booking.userid !== userId) {
@@ -163,11 +184,48 @@ const bookingController = {
         }
       }
 
-      await bookingRepository.updatePaymentStatus(bookingId, 'Canceled');
+      if(booking.paymentstatus == 'Cancelled'){
+        return {
+          success: false,
+          message: "Booking already Cancelled"
+        }
+      }
+
+    const currentDate = new Date();
+    const pickupDate = new Date(booking.pickupdate);
+
+    currentDate.setHours(0, 0, 0, 0);
+    pickupDate.setHours(0, 0, 0, 0);
+      if (pickupDate <= currentDate) {
+        return {
+          success: false,
+          message: "Cannot cancel booking as the pickup date has already passed."
+        };
+      }
+
+      await bookingRepository.updatePaymentStatus(bookingId, 'Cancelled');
       await vehicleRepository.updateVehicleAvailabilityAfterCancel(booking.vehicleid, booking.pickupdate, booking.dropoffdate);
+      const formattedDate = new Date(pickupDate).toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+    });
+      await notificationController.createNotification(userId,`Your booking for ${booking.vehiclename} for ${formattedDate} has been cancelled.`);
+      const notificationMessage = `Your booking for ${booking.vehiclename} for ${formattedDate} has been cancelled.`;
+
+       // Emit the notification event for real-time updates
+
+    io.emit('notification', { message: notificationMessage });
+
+    console.log(`Notification sent to user ${userId}: ${notificationMessage}`);
+
       return {
         success: true,
-        message: 'Booking canceled successfully',
+        message: 'Booking cancelled successfully',
       };
     }
     catch (error) {

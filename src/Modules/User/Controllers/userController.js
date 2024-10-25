@@ -4,7 +4,8 @@ import userRequest from '../Request/userRequest.js';
 import userRepository from '../Repository/userRepository.js';
 import jwt from 'jsonwebtoken';
 import phoneResolver from '../../../Utils/Twilio/graphql/resolver/phoneResolver.js';
-// import redisClient from '../../../../Config/Redis/redisClient.js';
+import notificationController from '../../../Utils/Notifications/Controller/notificationController.js';
+// import { wss } from '../../../../Config/Websocket/webSocketServer.js'
 
 const userController = {
   // Fetch all users
@@ -21,8 +22,8 @@ const userController = {
 
   // Fetch a single user by ID
   async getUserById(userId) {
-    console.log(userId,'2');
-    
+
+
     try {
       const result = await userRepository.getUserById(userId);
       // Check if user exists
@@ -150,10 +151,11 @@ const userController = {
       const token = jwt.sign(
         { userId: user.id }, // Only include userId in the payload
         process.env.JWT_SECRET // Secret key
-    );
+      );
 
-    
-      return { success: true, token, user };
+      const notifications = await notificationController.viewUserNotifications(user.id)
+
+      return { success: true, token, user, notifications };
     } catch (err) {
       console.error('Error logging in user:', err);
       return { success: false, message: 'Failed to log in user.' };

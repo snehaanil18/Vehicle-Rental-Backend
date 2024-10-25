@@ -7,7 +7,7 @@ const phoneController = {
     async sendOTP(phone){
         const otp = otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
         const otpExpiry = Date.now() + 4 * 60 * 1000;
-        console.log(otp);
+
 
         const otpDetails={
             otp:otp,
@@ -31,11 +31,11 @@ const phoneController = {
     },
 
     async verifyOTP(phone, otp, context) {
-        console.log('in phone verify',phone, otp);
+
         
         // Retrieve the OTP details from the session for the given phone number
         const sessionOtpDetails = context.req.session;
-        console.log(sessionOtpDetails);
+
         
         // Check if OTP exists for the phone number
         if (!sessionOtpDetails) {

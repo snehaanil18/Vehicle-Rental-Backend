@@ -24,7 +24,7 @@ const bookingResolver = {
       parent,
       { vehicleid, vehiclename, pickupdate, pickuplocation, dropoffdate, dropofflocation, totalamount, username, userid, paymentstatus },context
     ) => {
-      const {userId} = context;
+      const {userId,io} = context;
       return await bookingController.createBooking({
         vehicleid,
         vehiclename,
@@ -36,13 +36,17 @@ const bookingResolver = {
         username,
         userid,
         paymentstatus,
-        userId
-      });
+        userId,
+      },
+      io
+    );
     },
 
     cancelBooking: async (parent, { bookingId }, context) => {
-      const { userId } = context;
-      return await bookingController.cancelBooking({ bookingId, userId });
+      const { userId,io } = context;
+      console.log(io);
+      
+      return await bookingController.cancelBooking({ bookingId, userId },io);
     },
   },
 };

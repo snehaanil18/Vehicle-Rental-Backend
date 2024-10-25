@@ -54,10 +54,9 @@ const userRepository = {
   },
 
   async setOTP({ userId, otp, otpExpiry }) {
-    console.log(otpExpiry);
 
     const otpExpiryInSeconds = Math.floor(otpExpiry / 1000);
-    console.log(otpExpiryInSeconds);
+
 
     const result = await pool.query(
       `INSERT INTO otp (userid, otp, otpexpiry)

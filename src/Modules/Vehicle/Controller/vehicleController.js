@@ -216,7 +216,7 @@ const vehicleController = {
                 url
             }));
 
-            console.log('img',imagesToInsert,process.env.MINIO_ENDPOINT);
+
             
             // Insert new images into the database
             await Promise.all(imagesToInsert.map(image => {

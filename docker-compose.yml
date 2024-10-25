@@ -8,7 +8,7 @@ services:
     ports:
       - '4000:4000'
     environment:
-      - DB_USER=${DB_USER}             # Make sure to set these in your .env file
+      - DB_USER=${DB_USER}
       - DB_HOST=host.docker.internal    # Use host.docker.internal to point to local PostgreSQL
       - DB_NAME=${DB_NAME}
       - DB_PASSWORD=${DB_PASSWORD}
