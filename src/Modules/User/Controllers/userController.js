@@ -52,8 +52,6 @@ const userController = {
 
       const sendOTP = await phoneResolver.Mutation.sendOTP(null, { phone });
 
-      context.req.session.user = { name, email, hashedPassword, phone, city, state, country, pincode };
-      context.req.session.otp = sendOTP.detail;
 
       await redis.setex(`otp:${phone}`, 300, sendOTP.detail.otp);
 

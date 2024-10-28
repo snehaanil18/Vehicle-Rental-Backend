@@ -16,10 +16,32 @@ const vehicleResolvers = {
         const searchResults = await typesenseClient.collections('vehicles').documents().search({
           q: query,
           query_by: 'name',
+          sort_by: 'price:asc'
         });
         return searchResults.hits.map(hit => hit.document);
       } catch (error) {
         throw new ApolloError('Failed to search vehicles', error.message);
+      }
+    },
+
+    searchVehiclesByPriceRange: async (_, { minPrice, maxPrice }) => {
+      console.log(minPrice, maxPrice);
+      
+      const searchParameters = {
+        q: '*',
+        query_by: 'name,description',
+        filter_by: `price:>=${parseFloat(minPrice)} && price:<=${parseFloat(maxPrice)}`,
+        sort_by: 'price:asc',
+      };
+
+      try {
+        const response = await typesenseClient.collections('vehicles').documents().search(searchParameters);
+        console.log(response.hits);
+        
+        return response.hits.map(hit => hit.document); // Return the vehicle docume
+      } catch (error) {
+        console.error('Error searching vehicles:', error);
+        throw new Error('Failed to search vehicles'); 
       }
     },
 
@@ -85,7 +107,7 @@ const vehicleResolvers = {
           otherimages: otherImageUrls,
         };
 
-        
+
 
         // Pass the complete vehicle data to the vehicle controller
         return await vehicleController.createVehicle(vehicleInput);
@@ -103,7 +125,7 @@ const vehicleResolvers = {
     },
     updateVehicleImages: async (_, { id, images }) => {
 
-      
+
       try {
         let primaryImageUrl;
         let otherImageUrls = [];

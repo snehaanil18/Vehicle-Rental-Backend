@@ -5,6 +5,7 @@ const vehicleQueries = gql`
         getAllVehicles: [Vehicle]
         getVehicle(id: ID!): Vehicle
         searchVehicles(query: String!): [Vehicle]
+        searchVehiclesByPriceRange(minPrice:  String!, maxPrice:  String!): [Vehicle]
         getImagesByVehicleId(vehicleId: ID!): [Image]
         getVehicleAvailability(vehicleId: ID!, pickupdate: String!, dropoffdate: String!): VehicleAvailabilityResponse
     }
