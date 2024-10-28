@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-// Define Joi validation schema for creating a vehicle
+//Joi validation schema for creating a vehicle
 const vehicleSchema = Joi.object({
     name: Joi.string()
         .min(3)
@@ -48,7 +48,7 @@ const vehicleSchema = Joi.object({
         .required(),
 });
 
-// Define Joi validation schema for updating a vehicle
+// Joi validation schema for updating a vehicle
 const updateVehicleSchema = Joi.object({
     name: Joi.string()
         .min(3)
@@ -68,11 +68,11 @@ const updateVehicleSchema = Joi.object({
     otherimages: Joi.array()
         .items(Joi.string().uri())
         .optional()
-        .min(0), // Allow an empty array
-    primaryimageindex: Joi.number() // Include primaryimageindex for update validation
+        .min(0),
+    primaryimageindex: Joi.number()
         .integer()
         .min(0) 
-        .optional(), // Make it optional for updates
+        .optional(),
     model: Joi.string()
         .max(50)
         .optional()

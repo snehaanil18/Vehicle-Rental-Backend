@@ -36,11 +36,13 @@ const userResolver = {
       return await userController.loginUser(email, password);
     },
 
+    //update users profile image
     updateProfileImage: async (parent, { id, file }) => {
       const profileUrl = await uploadResolver.Mutation.uploadFile(null, { file });
       return await userController.updateUserProfileImage(id,profileUrl);      
     },
 
+    //verify entered OTP
     verifyOTP : async (_, {id, phone, otp }, context) => {
       return await userController.verifyOTP(id,phone, otp, context);
   }

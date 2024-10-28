@@ -165,6 +165,7 @@ const vehicleController = {
         }
     },
 
+    //check if vehicle is available on selected dates
     async checkVehicleAvailability(vehicleId, pickUpDate, dropOffDate) {
         try {
             const availableVehicles = await vehicleRepository.checkAvailability(vehicleId, pickUpDate, dropOffDate);
@@ -202,14 +203,13 @@ const vehicleController = {
         }
     },
 
+    //update the vehicle images
     async updateVehicleImages(vehicleId, args) {
-
-        
         try {
             // Delete all existing images for the vehicle
             await vehicleRepository.deleteImagesByVehicleId(vehicleId);
     
-            // Prepare new image data
+            //new image data
             const imagesToInsert = args.otherimages.map((url, index) => ({
                 vehicleId,
                 isPrimary: index === args.primaryimageindex,
@@ -230,7 +230,7 @@ const vehicleController = {
             });
             
             
-            // Return success message or updated vehicle images
+            // Return success message for ehicle images
             return { message: 'Images updated successfully' };
         } catch (err) {
             console.error('Error updating vehicle images:', err);

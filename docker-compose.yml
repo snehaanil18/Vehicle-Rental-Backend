@@ -20,12 +20,12 @@ services:
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
       - TYPESENSE_HOST=http://typesense:8108
       - TYPESENSE_API_KEY=${TYPESENSE_API_KEY}
-      - REDIS_HOST=redis  # Add Redis host
-      - REDIS_PORT=6379    # Add Redis port
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
       - minio
       - typesense
-      - redis             # Add dependency for Redis
+      - redis 
     command: bash -c "npm install && npm start"
 
   minio:
@@ -37,7 +37,7 @@ services:
     volumes:
       - minio-data:/data
     ports:
-      - "9000:9000"  # For the MinIO API
+      - "9000:9000"
       - "9001:9001" 
     command: server --console-address ":9001" /data
 
@@ -56,7 +56,7 @@ services:
     image: redis:latest
     container_name: redis
     ports:
-      - "6379:6379"  # Expose Redis port
+      - "6379:6379"
 
 volumes:
   minio-data:

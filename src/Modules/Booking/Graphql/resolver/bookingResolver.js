@@ -42,6 +42,7 @@ const bookingResolver = {
     );
     },
 
+    //cancel a booking
     cancelBooking: async (parent, { bookingId }, context) => {
       const { userId,io } = context;
       return await bookingController.cancelBooking({ bookingId, userId },io);

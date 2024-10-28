@@ -80,6 +80,7 @@ const paymentController = {
     }
   },
 
+  //get details of all payment
   async getAllPayments(){
     try{
       const result = await paymentRepository.getAllPayments();

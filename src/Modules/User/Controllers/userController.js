@@ -37,6 +37,7 @@ const userController = {
       throw new Error('Failed to fetch user');
     }
   },
+
   // Create a new user
   async createUser({ name, email, password, phone, city, state, country, pincode }, context) {
     // Validate user input
@@ -55,7 +56,7 @@ const userController = {
 
       await redis.setex(`otp:${phone}`, 300, sendOTP.detail.otp);
 
-      // Call the repository to create a new user with additional fields
+      // Call the repository to create a new user
       const result = await userRepository.createUser({ name, email, hashedPassword, phone, city, state, country, pincode });
       const details = result.rows[0]
 
@@ -84,7 +85,6 @@ const userController = {
       throw new Error('Failed to create user: ' + err.message);
     }
   },
-
 
   // Update an existing user by ID
   async updateUser({ id, name, email, phone, city, state, country, pincode }) {
@@ -129,6 +129,7 @@ const userController = {
     }
   },
 
+  //login a user
   async loginUser(email, password) {
     try {
       // Fetch user by email
@@ -149,8 +150,8 @@ const userController = {
       }
 
       const token = jwt.sign(
-        { userId: user.id }, // Only include userId in the payload
-        process.env.JWT_SECRET // Secret key
+        { userId: user.id }, 
+        process.env.JWT_SECRET 
       );
 
       const notifications = await notificationController.viewUserNotifications(user.id)

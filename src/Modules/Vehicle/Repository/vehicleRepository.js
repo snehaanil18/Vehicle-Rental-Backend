@@ -76,6 +76,7 @@ const vehicleRepository = {
     }
 },
 
+//check availability of a vehicle
   async checkAvailability(vehicleId, startDate, endDate) {
    
     try {

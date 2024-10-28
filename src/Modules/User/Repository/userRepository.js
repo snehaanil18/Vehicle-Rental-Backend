@@ -39,8 +39,8 @@ const userRepository = {
     return result.rows.length > 0 ? result.rows[0] : null; // Return user or null if not found
   },
 
+  //update users profile image
   async updateUserProfileImage(id, imageUrl) {
-
     const query = `
       UPDATE users
       SET profileimage = $1
@@ -54,7 +54,6 @@ const userRepository = {
   },
 
   async setOTP({ userId, otp, otpExpiry }) {
-
     const otpExpiryInSeconds = Math.floor(otpExpiry / 1000);
 
 
@@ -73,6 +72,7 @@ const userRepository = {
     return user.rows[0]
   },
 
+  //update verification status
   async updatePhoneVerify(userId, phoneVerified) {
     const query = `
     UPDATE users 

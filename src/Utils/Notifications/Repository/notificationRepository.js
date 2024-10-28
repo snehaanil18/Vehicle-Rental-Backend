@@ -1,6 +1,7 @@
 import pool from "../../../../Config/DB/db.js";
 
 const notificationRepository = {
+    //create notification
     async createNotification(userid, message) {
         const query = `
             INSERT INTO notifications (userid, message)
@@ -12,6 +13,7 @@ const notificationRepository = {
         return result.rows[0];
     },
 
+    //view notifications of a particular user
     async getUserNotifications(userid) {        
         const query = `
             SELECT * FROM notifications 

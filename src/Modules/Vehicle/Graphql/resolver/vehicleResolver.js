@@ -5,12 +5,17 @@ import typesenseClient from "../../../../../Config/Typesense/typesense.js";
 
 const vehicleResolvers = {
   Query: {
+    // Fetch all vehicles
     getAllVehicles: async () => {
       return await vehicleController.getAllVehicles();
     },
+
+    // Fetch a single vehicle by ID
     getVehicle: async (_, { id }) => {
       return await vehicleController.getVehicleById(id);
     },
+
+    //Search vehicle in typesense collection
     searchVehicles: async (_, { query }) => {
       try {
         const searchResults = await typesenseClient.collections('vehicles').documents().search({
@@ -24,6 +29,7 @@ const vehicleResolvers = {
       }
     },
 
+    //get vehicles in a given price range
     searchVehiclesByPriceRange: async (_, { minPrice, maxPrice }) => {
       const searchParameters = {
         q: '*',
@@ -43,6 +49,7 @@ const vehicleResolvers = {
       }
     },
 
+    //check vehicle availability
     getVehicleAvailability: async (parent, args) => {
 
       const { vehicleId, pickupdate, dropoffdate } = args;
@@ -57,6 +64,7 @@ const vehicleResolvers = {
 
   },
   Mutation: {
+    //add vehicle 
     addVehicle: async (_, args) => {
 
       const {
@@ -115,12 +123,17 @@ const vehicleResolvers = {
       }
     },
 
+    //update a vehicle
     updateVehicle: async (_, { id, ...args }) => {
       return await vehicleController.updateVehicle(id, args);
     },
+
+    //delete a vehicle
     deleteVehicle: async (_, { id }) => {
       return await vehicleController.deleteVehicle(id);
     },
+
+    //update vehicle images
     updateVehicleImages: async (_, { id, images }) => {
 
 
