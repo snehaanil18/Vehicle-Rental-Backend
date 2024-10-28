@@ -25,8 +25,6 @@ const vehicleResolvers = {
     },
 
     searchVehiclesByPriceRange: async (_, { minPrice, maxPrice }) => {
-      console.log(minPrice, maxPrice);
-      
       const searchParameters = {
         q: '*',
         query_by: 'name,description',

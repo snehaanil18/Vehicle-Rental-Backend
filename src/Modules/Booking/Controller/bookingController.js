@@ -4,7 +4,7 @@ import vehicleController from '../../Vehicle/Controller/vehicleController.js';
 import userController from '../../User/Controllers/userController.js';
 import vehicleRepository from '../../Vehicle/Repository/vehicleRepository.js';
 import notificationController from '../../../Utils/Notifications/Controller/notificationController.js'; 
-import WebSocket from 'ws';
+
 
 const bookingController = {
   // Fetch all bookings
