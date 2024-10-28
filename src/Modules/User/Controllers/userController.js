@@ -5,7 +5,7 @@ import userRepository from '../Repository/userRepository.js';
 import jwt from 'jsonwebtoken';
 import phoneResolver from '../../../Utils/Twilio/graphql/resolver/phoneResolver.js';
 import notificationController from '../../../Utils/Notifications/Controller/notificationController.js';
-// import { wss } from '../../../../Config/Websocket/webSocketServer.js'
+import redis from '../../../../Config/Redis/redisClient.js';
 
 const userController = {
   // Fetch all users
@@ -55,11 +55,13 @@ const userController = {
       context.req.session.user = { name, email, hashedPassword, phone, city, state, country, pincode };
       context.req.session.otp = sendOTP.detail;
 
+      await redis.setex(`otp:${phone}`, 300, sendOTP.detail.otp);
+
       // Call the repository to create a new user with additional fields
       const result = await userRepository.createUser({ name, email, hashedPassword, phone, city, state, country, pincode });
       const details = result.rows[0]
 
-      await userRepository.setOTP({ userId: details.id, otp: sendOTP.detail.otp, otpExpiry: sendOTP.detail.expiry })
+      // await userRepository.setOTP({ userId: details.id, otp: sendOTP.detail.otp, otpExpiry: sendOTP.detail.expiry })
 
       const response = {
         userId: details.id,
@@ -185,8 +187,8 @@ const userController = {
 
     try {
       // Retrieve the OTP details from the repository for the given user ID
-      const otpDetails = await userRepository.getOTP(id);
-
+      // const otpDetails = await userRepository.getOTP(id);
+      const otpDetails = await redis.get(`otp:${phone}`);
 
       // Check if OTP details exist for the user
       if (!otpDetails) {
@@ -194,20 +196,21 @@ const userController = {
       }
 
       // Check if OTP has expired
-      const otpExpiry = new Date(otpDetails.otpexpiry).getTime();  // Ensure otpexpiry is in proper Date format
-      if (Date.now() > otpExpiry) {
-        await userRepository.deleteUserById(id)
-        return { success: false, message: 'OTP has expired.' };
+      // const otpExpiry = new Date(otpDetails.otpexpiry).getTime();  // Ensure otpexpiry is in proper Date format
+      // if (Date.now() > otpExpiry) {
+      //   await userRepository.deleteUserById(id)
+      //   return { success: false, message: 'OTP has expired.' };
 
-      }
+      // }
 
       // Validate the OTP
-      if (otp !== otpDetails.otp) {
+      if (otp !== otpDetails) {
         return { success: false, message: 'Invalid OTP.' };
       }
 
       await userRepository.updatePhoneVerify(id, true);
-      await userRepository.clearOTP(id);
+      // await userRepository.clearOTP(id);
+      await redis.del(`otp:${phone}`);
 
       return { success: true, message: 'OTP verified successfully.' };
 
